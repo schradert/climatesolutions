@@ -47,7 +47,7 @@ ANS = 'Response Answer'
 # merging unique Q num and question (to improve)
 dic_questions = \
     city_response\
-        .groupby([NAME, NUM_Q])\
+        .groupby([NAME_Q, NUM_Q])\
         .size().reset_index(name='Freq')
 dic_corporate_water = \
     corporate_response_water\
@@ -57,7 +57,7 @@ dic_corporate_water = \
 def response(df, Q_num: str):
     """ Return df with all the answer to that question+question name """
     df_q = df[df[NUM_Q] == Q_num]
-    Q_name = dic_questions[dic_questions[NUM_Q] == Q_num][NAME].to_list()
+    Q_name = dic_questions[dic_questions[NUM_Q] == Q_num][NAME_Q].to_list()
 
     answer = pd.DataFrame(df_q[ANS], columns=[f'Q.nb : {Q_num}  {Q_name}'])
     return pd.concat([df_q[['Country', 'Organization']], answer], axis=1)
@@ -72,7 +72,7 @@ def clean_df(df):
 df = clean_df(city_response)
 uniques = dic_questions[NUM_Q].map(lambda num: len(df[df[NUM_Q] == str(num)][ANS].unique()))
 occurences = pd.concat([
-    dic_questions[[NUM_Q, NAME]], 
+    dic_questions[[NUM_Q, NAME_Q]], 
     pd.DataFrame(uniques, columns=['# of unique answers'])
 ], axis=1)
 
@@ -87,7 +87,7 @@ clean_city = clean_df(city_response)
 #---------------------------------------------
 
 """ Natural Hazards (Q2.1) """
-nh = clean_city[clean_city[NUM] == '2.1']
+nh = clean_city[clean_city[NUM_Q] == '2.1']
 nh_q = list(nh[NAME_C].unique())
 
 """ Q(2.1.3) : `Social impact of hazard overall` """
@@ -128,9 +128,9 @@ collab_description_answers = collab[collab[NAME_C] == "Description"][ANS]
 
 """Food--- nothing there"""
 df = clean_city
-df = df[df[NUM] == '12.4']
+df = df[df[NUM_Q] == '12.4']
 food = df[df[NUM_R] == 2]
-food_uniques = sub_sub_df[ANS].value_counts()
+food_uniques = food[ANS].value_counts()
 
 """water related issus"""
 df = clean_city
